@@ -1,0 +1,81 @@
+{
+  "builders": [{
+    "name": "kubernetes",
+    "vm_name": "VMware-ubuntu-kubernetes",
+    "type": "vmware-iso",
+    "guest_os_type": "ubuntu-64",
+    "tools_upload_flavor": "linux",
+    "keep_registered": true,
+    "headless": false,
+    "disk_size": 8000,
+    "vnc_disable_password": true,
+    "http_directory": "preseed",
+    "format": "ova",
+    "disk_type_id": "thin",
+    "keep_registered": false,
+
+    "iso_url": "http://releases.ubuntu.com/xenial/ubuntu-16.04.5-server-amd64.iso",
+    "iso_checksum": "c94de1cc2e10160f325eb54638a5b5aa38f181d60ee33dae9578d96d932ee5f8",
+    "iso_checksum_type": "sha256",
+
+    "ssh_username": "kube",
+    "ssh_password": "kube",
+    "ssh_timeout": "15m",
+
+
+    "boot_command": [
+      "<enter><wait>",
+      "<f6><esc>",
+      "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+      "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+      "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+      "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+      "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+      "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+      "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+      "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+      "<bs><bs><bs>",
+      "auto=true ",
+      "priority=critical ",
+      "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu.cfg ",
+      "hostname={{ .Name }} ",
+      "initrd=/install/initrd.gz ",
+      "grub-installer/bootdev=/dev/sda ",
+      "<enter>"
+    ],
+
+    "shutdown_command": "echo 'kube' | sudo -S systemctl poweroff",
+
+    "remote_type": "esx5",
+    "remote_host": "{{user `esxi_host`}}",
+    "remote_datastore": "{{user `esxi_datastore`}}",
+    "remote_username": "{{user `esxi_username`}}",
+    "remote_password": "{{user `esxi_password`}}",
+
+    "vmx_data": {
+      "ethernet0.networkName": "VM Network"
+    }
+  }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo 'kube' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "script": "scripts/install.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'kube' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "script": "scripts/install_kubernetes.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'kube' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "script": "scripts/network.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'kube' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "script": "scripts/cleanup.sh"
+    }
+  ]
+}

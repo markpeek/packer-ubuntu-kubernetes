@@ -1,0 +1,6 @@
+output-kubernetes/*
+packer_cache
+packerlog.txt
+vars.json
+vars-*.json
+!vars-sample.json
