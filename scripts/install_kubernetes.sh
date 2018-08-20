@@ -29,3 +29,9 @@ export LATEST=$(curl -s https://api.github.com/repos/vmware/dispatch/releases/la
 curl -OL https://github.com/vmware/dispatch/releases/download/$LATEST/dispatch-linux
 chmod +x dispatch-linux
 mv dispatch-linux /usr/local/bin/dispatch
+
+cat << EOF > /etc/docker/daemon.json
+{
+  "insecure-registries": ["10.96.0.0/12"]
+}
+EOF
