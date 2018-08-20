@@ -18,3 +18,14 @@ apt-get install -y kubeadm=$(apt-cache madison kubeadm | grep "$KUBERNETES" | he
 
 swapoff -a
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+kubeadm config images pull
+
+# Install and init Helm
+curl -Lo helm-linux-amd64.tar.gz https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-linux-amd64.tar.gz && tar -zxvf helm-linux-amd64.tar.gz && sudo mv linux-amd64/helm /usr/local/bin/helm && rm -rf helm-linux-amd64.tar.gz linux-amd64
+
+# Download Dispatch CLI
+export LATEST=$(curl -s https://api.github.com/repos/vmware/dispatch/releases/latest | jq -r .name)
+curl -OL https://github.com/vmware/dispatch/releases/download/$LATEST/dispatch-linux
+chmod +x dispatch-linux
+mv dispatch-linux /usr/local/bin/dispatch

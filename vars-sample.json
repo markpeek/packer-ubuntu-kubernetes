@@ -3,4 +3,7 @@
     "esxi_datastore": "datastore1",
     "esxi_username": "root",
     "esxi_password": "password"
+    "vc_host": "vc-host.example.com",
+    "vc_username": "administrator@vsphere.local",
+    "vc_password": "password"
 }

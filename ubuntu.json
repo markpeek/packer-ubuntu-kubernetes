@@ -7,12 +7,16 @@
     "tools_upload_flavor": "linux",
     "keep_registered": true,
     "headless": false,
-    "disk_size": 8000,
+    "disk_size": 20000,
+    "vmx_data": {
+      "ethernet0.networkName": "VM Network",
+      "memsize": "8192",
+      "numvcpus": "2"
+    },
     "vnc_disable_password": true,
     "http_directory": "preseed",
     "format": "ova",
     "disk_type_id": "thin",
-    "keep_registered": false,
 
     "iso_url": "http://releases.ubuntu.com/xenial/ubuntu-16.04.5-server-amd64.iso",
     "iso_checksum": "c94de1cc2e10160f325eb54638a5b5aa38f181d60ee33dae9578d96d932ee5f8",
@@ -50,13 +54,19 @@
     "remote_host": "{{user `esxi_host`}}",
     "remote_datastore": "{{user `esxi_datastore`}}",
     "remote_username": "{{user `esxi_username`}}",
-    "remote_password": "{{user `esxi_password`}}",
-
-    "vmx_data": {
-      "ethernet0.networkName": "VM Network"
-    }
+    "remote_password": "{{user `esxi_password`}}"
   }],
   "provisioners": [
+    {
+      "type": "file",
+      "source": "scripts/inputrc",
+      "destination": ".inputrc"
+    },
+    {
+      "type": "file",
+      "source": "scripts/setup_dispatch.sh",
+      "destination": "/tmp/setup_dispatch"
+    },
     {
       "type": "shell",
       "execute_command": "echo 'kube' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
@@ -76,6 +86,17 @@
       "type": "shell",
       "execute_command": "echo 'kube' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
       "script": "scripts/cleanup.sh"
+    }
+  ],
+  "post-processors": [
+    {
+       "type": "vsphere-template",
+       "host": "{{user `vc_host`}}",
+       "insecure": true,
+       "username": "{{user `vc_username`}}",
+       "password": "{{user `vc_password`}}",
+       "datacenter": "datacenter",
+       "folder": "/packer-templates/kubernetes"
     }
   ]
 }
