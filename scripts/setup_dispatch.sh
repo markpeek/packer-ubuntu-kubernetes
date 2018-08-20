@@ -53,3 +53,5 @@ cat << EOF > /etc/docker/daemon.json
   "insecure-registries": ["10.96.0.0/12"]
 }
 EOF
+
+chown -R kube.kube config.yaml .dispatch .helm .kube
